@@ -16,8 +16,12 @@ const int Screen_Height = 650;
 
 const int Max_Ball_Num = 30;
 const int Blocks_Num = 6;
+const int Extra_Balls_Num = 6;
 const int Number_of_Blocks_Row = 3;
+const int Number_of_Extra_Balls_Row = 3;
 const int R = 5;
+const int r = 7;
+const int Block_Side = 49;
 
 
 SDL_Window *Window = NULL;
@@ -33,6 +37,14 @@ void Null_Blocks(int Blocks[Blocks_Num])
 	}
 }
 
+void Null_Extra_Balls(int Extra_Balls[Extra_Balls_Num])
+{
+	for(int i = 0 ; i < Extra_Balls_Num ; i++)
+	{
+		Extra_Balls[i] = 0;
+	}
+}
+
 void Null_Y_Position_Blocks(int Y_Position_Blocks[Number_of_Blocks_Row])
 {
 	for(int i = 0 ; i < Number_of_Blocks_Row ; i++)
@@ -41,9 +53,18 @@ void Null_Y_Position_Blocks(int Y_Position_Blocks[Number_of_Blocks_Row])
 	}
 }
 
+void Null_Y_Position_Extra_Balls(int Y_Position_Extra_Balls[Number_of_Extra_Balls_Row])
+{
+	for(int i = 0 ; i < Number_of_Extra_Balls_Row ; i++)
+	{
+		Y_Position_Extra_Balls[i] = 25;
+	}
+}
+
 void New_Blocks(int Blocks[Blocks_Num] , int Blocks_Number)
 {
-	int c , Blocks_Active , Block_Position , Blocks_Numb;
+	int Blocks_Active , Block_Position , Blocks_Numb;
+	Null_Blocks(Blocks);
 	Blocks_Active = rand();
 	Blocks_Active = Blocks_Active % 6;
 	for(int i = 0 ; i < Blocks_Active ; i++)
@@ -60,6 +81,18 @@ void New_Blocks(int Blocks[Blocks_Num] , int Blocks_Number)
 		Blocks_Numb++;
 		Blocks[Block_Position] = Blocks_Numb;
 	}
+}
+
+void New_Extra_Balls(int Extra_Balls[Extra_Balls_Num] , int Extra_Balls_Number)
+{
+	int Extra_Ball_Position , Extra_Balls_Numb;
+	Null_Extra_Balls(Extra_Balls);
+	Extra_Ball_Position = rand();
+	Extra_Ball_Position = Extra_Ball_Position % 6;
+	Extra_Balls_Numb = rand();
+	Extra_Balls_Numb = Extra_Balls_Numb % (Extra_Balls_Number - 1);
+	Extra_Balls_Numb++;
+	Extra_Balls[Extra_Ball_Position] = Extra_Balls_Numb;
 }
 
 void Draw_Rectangle(int X_Position , int Y_Position , int Width , int Height , int Red , int Green , int Blue)
@@ -92,6 +125,14 @@ int Initialize_Blocks_Active(int Blocks_Active[Number_of_Blocks_Row])
 	}
 }
 
+int Initialize_Extra_Balls_Active(int Extra_Balls_Active[Number_of_Extra_Balls_Row])
+{
+	for(int i = 0 ; i < Number_of_Extra_Balls_Row ; i++)
+	{
+		Extra_Balls_Active[i] = 0;
+	}
+}
+
 int Initialize_X_Position_Ball(int X_Position_Ball[Max_Ball_Num] , int X)
 {
 	for(int i = 0 ; i < Max_Ball_Num ; i++)
@@ -109,38 +150,80 @@ int Initialize_Y_Position_Ball(int Y_Position_Ball[Max_Ball_Num] , int Y)
 	}
 }
 
+bool Touch_Block(int i , int X_Position_Ball)
+{
+	if((X_Position_Ball + R > (((Block_Side + 1) * i) + 1)) && (X_Position_Ball + R < (((Block_Side + 1) * i) + 1) + Block_Side))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool Touch_Extra_Ball(int i , int Y_Position_Extra_Ball , int X_Position_Ball)
+{
+	double distance_Square;
+	distance_Square = (((50 * i) + 25) - X_Position_Ball) * (((50 * i) + 25) - X_Position_Ball) + (Y_Position_Extra_Ball - ((Screen_Height / 2) + 50)) * (Y_Position_Extra_Ball - ((Screen_Height / 2) + 50));
+	if(distance_Square <= ((r + R) * (r + R)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 int main()
 {
 	srand(time(0));
 	int Balls_Active[Max_Ball_Num];
 	int Blocks_Active[Number_of_Blocks_Row];
+	int Extra_Balls_Active[Number_of_Extra_Balls_Row];
 	int X_Position_Ball[Max_Ball_Num];
 	int Y_Position_Ball[Max_Ball_Num];
 	int Blocks_1[Blocks_Num];
 	int Blocks_2[Blocks_Num];
 	int Blocks_3[Blocks_Num];
+	int Extra_Balls_1[Blocks_Num];
+	int Extra_Balls_2[Blocks_Num];
+	int Extra_Balls_3[Blocks_Num];
 	int Y_Position_Blocks[Number_of_Blocks_Row];
+	int Y_Position_Extra_Balls[Number_of_Extra_Balls_Row];
 
 	const int Vx = 6;
 	const int Vy = 5;
 	const int Full_Color = 255;
 	const int Null_Color = 0;
-	const int Block_Side = 49;
-	int First_Balls_Active = 4;
+	int First_Balls_Active = 6;
 	bool Quit = false;
 	bool Show = true;
 
 	Initialize_Balls_Active(Balls_Active);
 	Initialize_Blocks_Active(Blocks_Active);
+	Initialize_Extra_Balls_Active(Extra_Balls_Active);
 	Initialize_X_Position_Ball(X_Position_Ball , Screen_Width / 2);
-	Initialize_Y_Position_Ball(Y_Position_Ball , (Screen_Height / 2) + 100);
+	Initialize_Y_Position_Ball(Y_Position_Ball , (Screen_Height / 2) + 50);
+
 	Null_Blocks(Blocks_1);
-	New_Blocks(Blocks_1 , 5);
+	New_Blocks(Blocks_1 , 2);
+
 	Null_Blocks(Blocks_2);
-	New_Blocks(Blocks_2 , 5);
+	New_Blocks(Blocks_2 , 2);
+
 	Null_Blocks(Blocks_3);
-	New_Blocks(Blocks_3 , 5);
+	New_Blocks(Blocks_3 , 2);
+
+	Null_Extra_Balls(Extra_Balls_1);
+	New_Extra_Balls(Extra_Balls_1 , 2);
+
+	Null_Extra_Balls(Extra_Balls_2);
+	New_Extra_Balls(Extra_Balls_2 , 2);
+
+	Null_Extra_Balls(Extra_Balls_3);
+	New_Extra_Balls(Extra_Balls_3 , 2);
+
 	Null_Y_Position_Blocks(Y_Position_Blocks);
+	Null_Y_Position_Extra_Balls(Y_Position_Extra_Balls);
 
 	Blocks_Active[0] = 1;
 	for(int i = 0 ; i < First_Balls_Active ; i++)
@@ -168,11 +251,19 @@ int main()
 			{
 				Draw_Circle(X_Position_Ball[i] , Y_Position_Ball[i] , R , Full_Color , Full_Color , Full_Color);
 			}
+			/*for(int i = First_Balls_Active ; i < Max_Ball_Num ; i++)
+			{
+				Draw_Circle(X_Position_Ball[i] , Y_Position_Ball[i] , R , Null_Color , Null_Color , Null_Color);
+			}*/
 			for(int i = 0 ; i < Blocks_Num ; i++)
 			{
 				if(Blocks_1[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+				}
+				if(Blocks_1[i] == 0)
+				{
+					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 			}
 		}
@@ -209,6 +300,133 @@ int main()
 				}
 			}
 		}
+
+		if(((Screen_Height / 2) + 50 - R < Y_Position_Blocks[0] + Block_Side) && (((Screen_Height / 2) + 50 - R > Y_Position_Blocks[0])))
+		{
+			for(int i = 0 ; i < Blocks_Num ; i++)
+			{
+				if(Blocks_1[i] > 0)
+				{
+					if(Touch_Block(i , X_Position_Ball[0]) == true)
+					{
+						Blocks_1[i] = 0;
+						First_Balls_Active--;
+						if(First_Balls_Active <= 0)
+						{
+							return 0;
+						}
+						Balls_Active[First_Balls_Active] = 0;
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}
+
+		if(((Screen_Height / 2) + 50 - R < Y_Position_Blocks[1] + Block_Side) && (((Screen_Height / 2) + 50 - R > Y_Position_Blocks[1])))
+		{
+			for(int i = 0 ; i < Blocks_Num ; i++)
+			{
+				if(Blocks_2[i] > 0)
+				{
+					if(Touch_Block(i , X_Position_Ball[0]) == true)
+					{
+						Blocks_2[i] = 0;
+						First_Balls_Active--;
+						if(First_Balls_Active <= 0)
+						{
+							return 0;
+						}
+						Balls_Active[First_Balls_Active] = 0;
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[1] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}
+
+		if(((Screen_Height / 2) + 50 - R < Y_Position_Blocks[2] + Block_Side) && (((Screen_Height / 2) + 50 - R > Y_Position_Blocks[2])))
+		{
+			for(int i = 0 ; i < Blocks_Num ; i++)
+			{
+				if(Blocks_3[i] > 0)
+				{
+					if(Touch_Block(i , X_Position_Ball[0]) == true)
+					{
+						Blocks_3[i] = 0;
+						First_Balls_Active--;
+						if(First_Balls_Active <= 0)
+						{
+							return 0;
+						}
+						Balls_Active[First_Balls_Active] = 0;
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[2] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		if(((Screen_Height / 2) + 50 - R < Y_Position_Extra_Balls[0] + r) && (((Screen_Height / 2) + 50 - R > Y_Position_Extra_Balls[0] - r)))
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_1[i] > 0)
+				{
+					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[0] , X_Position_Ball[0]) == true)
+					{
+						Extra_Balls_1[i] = 0;
+						Balls_Active[First_Balls_Active] = 1;
+						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
+						First_Balls_Active++;
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}
+
+		if(((Screen_Height / 2) + 50 - R < Y_Position_Extra_Balls[1] + r) && (((Screen_Height / 2) + 50 - R > Y_Position_Extra_Balls[1] - r)))
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_2[i] > 0)
+				{
+					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[1] , X_Position_Ball[0]) == true)
+					{
+						Extra_Balls_2[i] = 0;
+						Balls_Active[First_Balls_Active] = 1;
+						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
+						First_Balls_Active++;
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}
+
+		/*if(((Screen_Height / 2) + 50 - R < Y_Position_Extra_Balls[2] + r) && (((Screen_Height / 2) + 50 - R > Y_Position_Extra_Balls[2] - r)))
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_3[i] > 0)
+				{
+					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[2] , X_Position_Ball[0]) == true)
+					{
+						Extra_Balls_3[i] = 0;
+						Balls_Active[First_Balls_Active] = 1;
+						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
+						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
+						First_Balls_Active++;
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+		}*/
+
+
 		for(int i = 0 ; i < Blocks_Num ; i++)
 		{
 			if(Blocks_Active[0] == 1)
@@ -234,6 +452,31 @@ int main()
 			}
 		}
 
+		for(int i = 0 ; i < Extra_Balls_Num ; i++)
+		{
+			if(Extra_Balls_Active[0] == 1)
+			{
+				if(Extra_Balls_1[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Null_Color , Null_Color , Null_Color);
+				}
+			}
+			if(Extra_Balls_Active[1] == 1)
+			{
+				if(Extra_Balls_2[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Null_Color , Null_Color , Null_Color);
+				}
+			}
+			if(Extra_Balls_Active[2] == 1)
+			{
+				if(Extra_Balls_3[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Null_Color , Null_Color , Null_Color);
+				}
+			}
+		}
+
 
 		if(Blocks_Active[0] == 1)
 		{
@@ -249,9 +492,32 @@ int main()
 		}
 
 
+		if(Extra_Balls_Active[0] == 1)
+		{
+			Y_Position_Extra_Balls[0] = Y_Position_Extra_Balls[0] + Vy;
+		}
+		if(Extra_Balls_Active[1] == 1)
+		{
+			Y_Position_Extra_Balls[1] = Y_Position_Extra_Balls[1] + Vy;
+		}
+		if(Extra_Balls_Active[2] == 1)
+		{
+			Y_Position_Extra_Balls[2] = Y_Position_Extra_Balls[2] + Vy;
+		}
+
+
+
+		if(Y_Position_Blocks[0] > 100)
+		{
+			Extra_Balls_Active[0] = 1;
+		}
 		if(Y_Position_Blocks[0] > 150)
 		{
 			Blocks_Active[1] = 1;
+		}
+		if(Y_Position_Blocks[1] > 100)
+		{
+			Extra_Balls_Active[1] = 1;
 		}
 		if(Y_Position_Blocks[1] > 150)
 		{
@@ -271,8 +537,9 @@ int main()
 				}
 			}
 			Y_Position_Blocks[0] = 0;
-			New_Blocks(Blocks_1 , 5);
+			New_Blocks(Blocks_1 , 2);
 		}
+
 		if(Y_Position_Blocks[1] > 450)
 		{
 			for(int i = 0 ; i < Blocks_Num ; i++)
@@ -286,8 +553,9 @@ int main()
 				}
 			}
 			Y_Position_Blocks[1] = 0;
-			New_Blocks(Blocks_2 , 5);
+			New_Blocks(Blocks_2 , 2);
 		}
+
 		if(Y_Position_Blocks[2] > 450)
 		{
 			for(int i = 0 ; i < Blocks_Num ; i++)
@@ -301,8 +569,58 @@ int main()
 				}
 			}
 			Y_Position_Blocks[2] = 0;
-			New_Blocks(Blocks_3 , 5);
+			New_Blocks(Blocks_3 , 2);
 		}
+
+		//////////////////////////
+		if(Y_Position_Extra_Balls[0] > 450)
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_Active[0] == 1)
+				{
+					if(Extra_Balls_1[i] > 0)
+					{
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+			Y_Position_Extra_Balls[0] = 0;
+			New_Extra_Balls(Extra_Balls_1 , 2);
+		}
+
+		if(Y_Position_Extra_Balls[1] > 450)
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_Active[1] == 1)
+				{
+					if(Extra_Balls_2[i] > 0)
+					{
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+			Y_Position_Extra_Balls[1] = 0;
+			New_Extra_Balls(Extra_Balls_2 , 2);
+		}
+
+		if(Y_Position_Extra_Balls[2] > 450)
+		{
+			for(int i = 0 ; i < Extra_Balls_Num ; i++)
+			{
+				if(Extra_Balls_Active[2] == 1)
+				{
+					if(Extra_Balls_3[i] > 0)
+					{
+						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Null_Color , Null_Color , Null_Color);
+					}
+				}
+			}
+			Y_Position_Extra_Balls[2] = 0;
+			New_Extra_Balls(Extra_Balls_3 , 2);
+		}
+
 
 		for(int i = 0 ; i < Blocks_Num ; i++)
 		{
@@ -325,6 +643,31 @@ int main()
 				if(Blocks_3[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[2] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+				}
+			}
+		}
+
+		for(int i = 0 ; i < Extra_Balls_Num ; i++)
+		{
+			if(Extra_Balls_Active[0] == 1)
+			{
+				if(Extra_Balls_1[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Full_Color , Full_Color , Full_Color);
+				}
+			}
+			if(Extra_Balls_Active[1] == 1)
+			{
+				if(Extra_Balls_2[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Full_Color , Full_Color , Full_Color);
+				}
+			}
+			if(Extra_Balls_Active[2] == 1)
+			{
+				if(Extra_Balls_3[i] > 0)
+				{
+					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Full_Color , Full_Color , Full_Color);
 				}
 			}
 		}
