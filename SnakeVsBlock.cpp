@@ -12,7 +12,7 @@
 using namespace std;
 
 const int Screen_Width = 300;
-const int Screen_Height = 650;
+const int Screen_Height = 570;
 
 const int Max_Ball_Num = 30;
 const int Blocks_Num = 6;
@@ -173,6 +173,105 @@ bool Touch_Extra_Ball(int i , int Y_Position_Extra_Ball , int X_Position_Ball)
 	}
 }
 
+void Making_String(char String[5] , int Number)
+{
+	char C;
+	int i = 0;
+	while(Number != 0)
+	{
+		String[i] = (Number % 10) + '0';
+		Number = Number / 10;
+		i++;
+	}
+	String[i] = '\0';
+
+	int r = 0;
+	int s = i - 1;
+
+	while(r < s)
+	{
+		C = String[r];
+		String[r] = String[s];
+		String[s] = C;
+		r++;
+		s--;
+	}
+}
+
+void Draw_Text(int Number , int X_Position , int Y_Position , int Width , int Height , int Red , int Green , int Blue)
+{
+	char String[5];
+	Making_String(String , Number);
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 100);
+	SDL_Color Text_Color = {0 , 0 , 0};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , String , Text_Color);
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	SDL_SetRenderDrawColor(Renderer , Red , Green , Blue , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	SDL_RenderPresent(Renderer);
+	TTF_CloseFont(Font);
+}
+
+void Ball_Text(int X_Position , int Y_Position , int Width , int Height)
+{
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 50);
+	SDL_Color Text_Color = {255 , 255 , 255};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , "Ball: " , Text_Color);
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	SDL_SetRenderDrawColor(Renderer , 255 , 255 , 255 , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	SDL_RenderPresent(Renderer);
+}
+
+void Ball_Number_Text(int Number , int X_Position , int Y_Position , int Width , int Height)
+{
+	char String[5];
+	Making_String(String , Number);
+	Draw_Rectangle(X_Position , Y_Position , Width , Height , 0 , 0 , 0);
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 50);
+	SDL_Color Text_Color = {255 , 255 , 255};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , String , Text_Color);
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	SDL_SetRenderDrawColor(Renderer , 255 , 255 , 255 , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	SDL_RenderPresent(Renderer);
+}
+
+void Score_Text(int X_Position , int Y_Position , int Width , int Height)
+{
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 50);
+	SDL_Color Text_Color = {255 , 255 , 255};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , "Score: " , Text_Color);
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	SDL_SetRenderDrawColor(Renderer , 255 , 255 , 255 , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	SDL_RenderPresent(Renderer);
+}
+
+void Score_Number_Text(int Number , int X_Position , int Y_Position , int Width , int Height)
+{
+	char String[5];
+	Making_String(String , Number);
+	Draw_Rectangle(X_Position , Y_Position , Width , Height , 0 , 0 , 0);
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 50);
+	SDL_Color Text_Color = {255 , 255 , 255};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , String , Text_Color);
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	SDL_SetRenderDrawColor(Renderer , 255 , 255 , 255 , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	SDL_RenderPresent(Renderer);
+}
+
 int main()
 {
 	srand(time(0));
@@ -194,7 +293,10 @@ int main()
 	const int Vy = 5;
 	const int Full_Color = 255;
 	const int Null_Color = 0;
-	int First_Balls_Active = 6;
+	int Hardness = 5;
+	int First_Balls_Active = 4;
+	int Score = 1;
+	int X = 0;
 	bool Quit = false;
 	bool Show = true;
 
@@ -205,13 +307,13 @@ int main()
 	Initialize_Y_Position_Ball(Y_Position_Ball , (Screen_Height / 2) + 50);
 
 	Null_Blocks(Blocks_1);
-	New_Blocks(Blocks_1 , 2);
+	New_Blocks(Blocks_1 , First_Balls_Active + Hardness);
 
 	Null_Blocks(Blocks_2);
-	New_Blocks(Blocks_2 , 2);
+	New_Blocks(Blocks_2 , First_Balls_Active + Hardness);
 
 	Null_Blocks(Blocks_3);
-	New_Blocks(Blocks_3 , 2);
+	New_Blocks(Blocks_3 , First_Balls_Active + Hardness);
 
 	Null_Extra_Balls(Extra_Balls_1);
 	New_Extra_Balls(Extra_Balls_1 , 2);
@@ -260,12 +362,18 @@ int main()
 				if(Blocks_1[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Blocks_1[i] , (((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 				if(Blocks_1[i] == 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 			}
+			Draw_Rectangle(0 , 500 + Vy , Screen_Width , 5 , Full_Color , Full_Color , Full_Color);
+			Ball_Text(5 , 520 , 70 , 40);
+			Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
+			Score_Text(Screen_Width - 100 , 520 , 70 , 40);
+			Score_Number_Text(Score , Screen_Width - 25 , 520 , 20 , 40);
 		}
 		Show = false;
 		if(e.type == SDL_KEYDOWN)
@@ -309,15 +417,25 @@ int main()
 				{
 					if(Touch_Block(i , X_Position_Ball[0]) == true)
 					{
-						Blocks_1[i] = 0;
-						First_Balls_Active--;
+						X = Blocks_1[i];
+						Blocks_1[i] = Blocks_1[i] - First_Balls_Active;
+						First_Balls_Active = First_Balls_Active - X;
+						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
 							return 0;
 						}
-						Balls_Active[First_Balls_Active] = 0;
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
+						{
+							Balls_Active[i] = 0;
+							Draw_Circle(X_Position_Ball[i] , Y_Position_Ball[i] , R , Null_Color , Null_Color , Null_Color);
+						}
 						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
+						Draw_Rectangle(Screen_Width - 25 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Score_Number_Text(Score , Screen_Width - 25 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -331,15 +449,25 @@ int main()
 				{
 					if(Touch_Block(i , X_Position_Ball[0]) == true)
 					{
-						Blocks_2[i] = 0;
-						First_Balls_Active--;
+						X = Blocks_2[i];
+						Blocks_2[i] = Blocks_2[i] - First_Balls_Active;
+						First_Balls_Active = First_Balls_Active - X;
+						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
 							return 0;
 						}
-						Balls_Active[First_Balls_Active] = 0;
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
+						{
+							Balls_Active[i] = 0;
+							Draw_Circle(X_Position_Ball[i] , Y_Position_Ball[i] , R , Null_Color , Null_Color , Null_Color);
+						}
 						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[1] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
+						Draw_Rectangle(Screen_Width - 25 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Score_Number_Text(Score , Screen_Width - 25 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -353,15 +481,25 @@ int main()
 				{
 					if(Touch_Block(i , X_Position_Ball[0]) == true)
 					{
-						Blocks_3[i] = 0;
-						First_Balls_Active--;
+						X = Blocks_3[i];
+						Blocks_3[i] = Blocks_3[i] - First_Balls_Active;
+						First_Balls_Active = First_Balls_Active - X;
+						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
 							return 0;
 						}
-						Balls_Active[First_Balls_Active] = 0;
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Null_Color , Null_Color , Null_Color);
+						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
+						{
+							Balls_Active[i] = 0;
+							Draw_Circle(X_Position_Ball[i] , Y_Position_Ball[i] , R , Null_Color , Null_Color , Null_Color);
+						}
 						Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[2] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
+						Draw_Rectangle(Screen_Width - 25 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Score_Number_Text(Score , Screen_Width - 25 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -383,6 +521,9 @@ int main()
 						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
 						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -402,6 +543,9 @@ int main()
 						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
 						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -421,6 +565,9 @@ int main()
 						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
 						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Null_Color , Null_Color , Null_Color);
+						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
+						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
+						Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
 					}
 				}
 			}
@@ -537,7 +684,7 @@ int main()
 				}
 			}
 			Y_Position_Blocks[0] = 0;
-			New_Blocks(Blocks_1 , 2);
+			New_Blocks(Blocks_1 , First_Balls_Active + Hardness);
 		}
 
 		if(Y_Position_Blocks[1] > 450)
@@ -553,7 +700,7 @@ int main()
 				}
 			}
 			Y_Position_Blocks[1] = 0;
-			New_Blocks(Blocks_2 , 2);
+			New_Blocks(Blocks_2 , First_Balls_Active + Hardness);
 		}
 
 		if(Y_Position_Blocks[2] > 450)
@@ -569,7 +716,7 @@ int main()
 				}
 			}
 			Y_Position_Blocks[2] = 0;
-			New_Blocks(Blocks_3 , 2);
+			New_Blocks(Blocks_3 , First_Balls_Active + Hardness);
 		}
 
 		//////////////////////////
@@ -629,6 +776,7 @@ int main()
 				if(Blocks_1[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Blocks_1[i] , (((Block_Side + 1) * i) + 1) , Y_Position_Blocks[0] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 			}
 			if(Blocks_Active[1] == 1)
@@ -636,6 +784,7 @@ int main()
 				if(Blocks_2[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[1] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Blocks_2[i] , (((Block_Side + 1) * i) + 1) , Y_Position_Blocks[1] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 			}
 			if(Blocks_Active[2] == 1)
@@ -643,6 +792,7 @@ int main()
 				if(Blocks_3[i] > 0)
 				{
 					Draw_Rectangle((((Block_Side + 1) * i) + 1) , Y_Position_Blocks[2] , Block_Side , Block_Side , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Blocks_3[i] , (((Block_Side + 1) * i) + 1) , Y_Position_Blocks[2] , Block_Side , Block_Side , Null_Color , Null_Color , Null_Color);
 				}
 			}
 		}
