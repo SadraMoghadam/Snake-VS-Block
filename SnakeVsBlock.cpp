@@ -46,7 +46,7 @@ void Null_Extra_Balls(int Extra_Balls[Extra_Balls_Num])
 }
 
 void Null_Y_Position_Blocks(int Y_Position_Blocks[Number_of_Blocks_Row])
-{
+{ 
 	for(int i = 0 ; i < Number_of_Blocks_Row ; i++)
 	{
 		Y_Position_Blocks[i] = 0;
