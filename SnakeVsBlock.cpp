@@ -20,7 +20,7 @@ const int Extra_Balls_Num = 6;
 const int Number_of_Blocks_Row = 3;
 const int Number_of_Extra_Balls_Row = 3;
 const int R = 5;
-const int r = 7;
+const int r = 10;
 const int Block_Side = 49;
 
 
@@ -46,7 +46,7 @@ void Null_Extra_Balls(int Extra_Balls[Extra_Balls_Num])
 }
 
 void Null_Y_Position_Blocks(int Y_Position_Blocks[Number_of_Blocks_Row])
-{ 
+{
 	for(int i = 0 ; i < Number_of_Blocks_Row ; i++)
 	{
 		Y_Position_Blocks[i] = 0;
@@ -294,6 +294,7 @@ int main()
 	const int Full_Color = 255;
 	const int Null_Color = 0;
 	int Hardness = 5;
+	int Easyness = 5;
 	int First_Balls_Active = 4;
 	int Score = 1;
 	int X = 0;
@@ -316,13 +317,13 @@ int main()
 	New_Blocks(Blocks_3 , First_Balls_Active + Hardness);
 
 	Null_Extra_Balls(Extra_Balls_1);
-	New_Extra_Balls(Extra_Balls_1 , 2);
+	New_Extra_Balls(Extra_Balls_1 , Easyness);
 
 	Null_Extra_Balls(Extra_Balls_2);
-	New_Extra_Balls(Extra_Balls_2 , 2);
+	New_Extra_Balls(Extra_Balls_2 , Easyness);
 
 	Null_Extra_Balls(Extra_Balls_3);
-	New_Extra_Balls(Extra_Balls_3 , 2);
+	New_Extra_Balls(Extra_Balls_3 , Easyness);
 
 	Null_Y_Position_Blocks(Y_Position_Blocks);
 	Null_Y_Position_Extra_Balls(Y_Position_Extra_Balls);
@@ -515,11 +516,14 @@ int main()
 				{
 					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[0] , X_Position_Ball[0]) == true)
 					{
+						for(int j = First_Balls_Active ; j < First_Balls_Active + Extra_Balls_1[i] ; j++)
+						{
+							Balls_Active[j] = 1;
+							X_Position_Ball[j] = X_Position_Ball[j - 1];
+							Draw_Circle(X_Position_Ball[j] , Y_Position_Ball[j] , R , Full_Color , Full_Color , Full_Color);
+						}
+						First_Balls_Active = First_Balls_Active + Extra_Balls_1[i];
 						Extra_Balls_1[i] = 0;
-						Balls_Active[First_Balls_Active] = 1;
-						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
-						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Null_Color , Null_Color , Null_Color);
 						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
 						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
@@ -537,11 +541,14 @@ int main()
 				{
 					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[1] , X_Position_Ball[0]) == true)
 					{
+						for(int j = First_Balls_Active ; j < First_Balls_Active + Extra_Balls_2[i] ; j++)
+						{
+							Balls_Active[j] = 1;
+							X_Position_Ball[j] = X_Position_Ball[j - 1];
+							Draw_Circle(X_Position_Ball[j] , Y_Position_Ball[j] , R , Full_Color , Full_Color , Full_Color);
+						}
+						First_Balls_Active = First_Balls_Active + Extra_Balls_2[i];
 						Extra_Balls_2[i] = 0;
-						Balls_Active[First_Balls_Active] = 1;
-						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
-						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Null_Color , Null_Color , Null_Color);
 						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
 						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
@@ -559,11 +566,16 @@ int main()
 				{
 					if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[2] , X_Position_Ball[0]) == true)
 					{
+						if(Touch_Extra_Ball(i , Y_Position_Extra_Balls[1] , X_Position_Ball[0]) == true)
+					{
+						for(int j = First_Balls_Active ; j < First_Balls_Active + Extra_Balls_3[i] ; j++)
+						{
+							Balls_Active[j] = 1;
+							X_Position_Ball[j] = X_Position_Ball[j - 1];
+							Draw_Circle(X_Position_Ball[j] , Y_Position_Ball[j] , R , Full_Color , Full_Color , Full_Color);
+						}
+						First_Balls_Active = First_Balls_Active + Extra_Balls_3[i];
 						Extra_Balls_3[i] = 0;
-						Balls_Active[First_Balls_Active] = 1;
-						X_Position_Ball[First_Balls_Active] = X_Position_Ball[First_Balls_Active - 1];
-						Draw_Circle(X_Position_Ball[First_Balls_Active] , Y_Position_Ball[First_Balls_Active] , R , Full_Color , Full_Color , Full_Color);
-						First_Balls_Active++;
 						Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Null_Color , Null_Color , Null_Color);
 						Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
 						Draw_Rectangle(80 , 520 , 20 , 40 , Null_Color , Null_Color , Null_Color);
@@ -733,7 +745,7 @@ int main()
 				}
 			}
 			Y_Position_Extra_Balls[0] = 0;
-			New_Extra_Balls(Extra_Balls_1 , 2);
+			New_Extra_Balls(Extra_Balls_1 , Easyness);
 		}
 
 		if(Y_Position_Extra_Balls[1] > 450)
@@ -749,7 +761,7 @@ int main()
 				}
 			}
 			Y_Position_Extra_Balls[1] = 0;
-			New_Extra_Balls(Extra_Balls_2 , 2);
+			New_Extra_Balls(Extra_Balls_2 , Easyness);
 		}
 
 		if(Y_Position_Extra_Balls[2] > 450)
@@ -765,7 +777,7 @@ int main()
 				}
 			}
 			Y_Position_Extra_Balls[2] = 0;
-			New_Extra_Balls(Extra_Balls_3 , 2);
+			New_Extra_Balls(Extra_Balls_3 , Easyness);
 		}
 
 
@@ -804,6 +816,7 @@ int main()
 				if(Extra_Balls_1[i] > 0)
 				{
 					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[0] , r , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Extra_Balls_1[i] , ((50 * i) + 25 - r) , Y_Position_Extra_Balls[0] - r , 2 * r , 2 * r , Null_Color , Null_Color , Null_Color);
 				}
 			}
 			if(Extra_Balls_Active[1] == 1)
@@ -811,6 +824,7 @@ int main()
 				if(Extra_Balls_2[i] > 0)
 				{
 					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[1] , r , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Extra_Balls_2[i] , ((50 * i) + 25 - r) , Y_Position_Extra_Balls[1] - r , 2 * r , 2 * r , Null_Color , Null_Color , Null_Color);
 				}
 			}
 			if(Extra_Balls_Active[2] == 1)
@@ -818,6 +832,7 @@ int main()
 				if(Extra_Balls_3[i] > 0)
 				{
 					Draw_Circle(((50 * i) + 25) , Y_Position_Extra_Balls[2] , r , Full_Color , Full_Color , Full_Color);
+					Draw_Text(Extra_Balls_3[i] , ((50 * i) + 25 - r) , Y_Position_Extra_Balls[2] - r , 2 * r , 2 * r , Null_Color , Null_Color , Null_Color);
 				}
 			}
 		}
