@@ -8,6 +8,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <SDL2/SDL_image.h>
+#include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -22,6 +24,7 @@ const int Number_of_Extra_Balls_Row = 3;
 const int R = 5;
 const int r = 10;
 const int Block_Side = 49;
+int highscore = 1;
 
 
 SDL_Window *Window = NULL;
@@ -272,6 +275,254 @@ void Score_Number_Text(int Number , int X_Position , int Y_Position , int Width 
 	SDL_RenderPresent(Renderer);
 }
 
+void show_text(char* s,int X_Position , int Y_Position , int Width , int Height)
+{
+	TTF_Init();
+	Font = TTF_OpenFont("Font.ttf" , 50);
+	cout << 1 << endl;
+	SDL_Color Text_Color = {255 , 0 , 0};
+	SDL_Surface *Text_Surface = TTF_RenderText_Solid(Font , s , Text_Color);
+	cout << 2 << endl;
+	Texture = SDL_CreateTextureFromSurface(Renderer , Text_Surface);
+	cout << 3 << endl;
+	SDL_SetRenderDrawColor(Renderer , 255 , 255 , 255 , 0xFF);
+	SDL_Rect renderQuad = {X_Position , Y_Position , Width , Height};
+	SDL_RenderCopyEx(Renderer , Texture , NULL , &renderQuad , 0.0 , NULL , SDL_FLIP_NONE);
+	cout << 4 << endl;
+	TTF_CloseFont(Font);
+	cout << 5 << endl;
+}
+
+void showmenu_start1(SDL_Surface* screen, SDL_Renderer* renderer)
+{
+	TTF_Font* Font = TTF_OpenFont("Font.ttf", 50);
+	//Menu_Text(20,10,260,100);
+	TTF_CloseFont(Font);
+	bool Menu = true;
+	while(Menu)
+	{
+		int x, y;
+		SDL_Color color = {255,100,100};
+		SDL_Surface* Title = TTF_RenderText_Solid(Font , "Snake VS Blocks" , color);
+		SDL_FreeSurface(Title);
+	}
+}
+
+int showmenu_start(SDL_Window* Window, SDL_Renderer* renderer)	//{ "play","exit"};0,1
+{
+	TTF_Font* Font = TTF_OpenFont("Font.ttf", 50);
+	SDL_Surface* screen = SDL_GetWindowSurface(Window);
+	int x , y;
+	show_text("Snake Vs Block", 20, 70, 260, 100);
+	SDL_Rect fillRect = {30 , 300 , 240 , 100};
+	SDL_SetRenderDrawColor(renderer, 255 , 255 , 255 , 0xFF);
+	SDL_RenderFillRect(renderer, &fillRect);
+	show_text("Start", 35, 310, 220, 90);
+	cout << 6 << endl;
+	bool stillmenu = true;
+	cout << 7 << endl;
+	while (stillmenu == true)
+	{
+
+		//SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 00, 00, 00));
+		cout << 11 << endl;
+
+		SDL_Event event;
+
+		while (true)
+		{
+
+			while (SDL_PollEvent(&event))
+			{
+				cout << 13 << endl;
+				switch (event.type)
+				{
+
+				case(SDL_QUIT):
+				{
+					return 0;
+					break;
+				}
+
+				case(SDL_MOUSEBUTTONDOWN):
+				{
+
+					if (event.button.button = SDL_BUTTON_LEFT)
+					{
+
+						x = event.button.x;
+						y = event.button.y;
+							if (x >= 10 && x <= 280 && y >= 300 && y <= 500)
+							{
+								//	SDL_Delay(500);
+								//SDL_FreeSurface(title);
+								//for (int j = 0; j < menunumber; j++)
+									//SDL_FreeSurface(menu[j]);
+									SDL_Rect fillRect = {0 , 0 , Screen_Width , Screen_Height};
+									SDL_SetRenderDrawColor(Renderer, 0 , 0 , 0 , 0xFF);
+									SDL_RenderFillRect(Renderer, &fillRect);
+									return 1;
+									break;
+							}
+
+						}
+					}
+
+					break;
+				}
+			}
+			SDL_RenderPresent(renderer);
+			TTF_CloseFont(Font);
+		}
+	}
+
+}
+
+/*void showmenu_gameover1(SDL_Window* Window, SDL_Renderer* Renderer)
+{
+	SDL_Surface* screen = SDL_GetWindowSurface(Window);
+	TTF_Font* Font = TTF_OpenFont("Font.ttf", 50);
+	SDL_Rect fillRect = {0 , 0 , Screen_Width , Screen_Height};
+	SDL_SetRenderDrawColor(Renderer, 0 , 0 , 0 , 0xFF);
+	SDL_RenderFillRect(Renderer, &fillRect);
+	show_text("Game Over", 20, 20, 260 , 100);
+	SDL_RenderPresent(Renderer);
+}*/
+
+int showmenu_gameover(SDL_Window* Window, SDL_Renderer* Renderer, int Score)
+{
+	SDL_Surface* screen = SDL_GetWindowSurface(Window);
+	TTF_Font* Font = TTF_OpenFont("Font.ttf", 50);
+
+	int x, y;
+	SDL_Color color[3] = { { 255,255,255 },{ 0,130,255 },{ 255,0,0 } };
+
+	SDL_Surface* title = TTF_RenderText_Solid(Font, "game over!!", color[2]);
+	SDL_Rect fillRect = {0 , 0 , Screen_Width , Screen_Height};
+	SDL_SetRenderDrawColor(Renderer, 0 , 0 , 0 , 0xFF);
+	SDL_RenderFillRect(Renderer, &fillRect);
+	show_text("Game Over", 20, 80, 260 , 100);
+	Score_Text(100 , 350 , 70 , 30);
+	Score_Number_Text(Score , 180 , 350 , 20 , 30);
+
+	SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 00, 00, 00));
+
+	SDL_Event event;
+
+	while (1)
+	{
+
+		while (SDL_PollEvent(&event))
+		{
+
+			switch (event.type)
+			{
+
+			case(SDL_QUIT):
+			{
+				return 0;
+			}
+		 }
+		}
+		SDL_RenderPresent(Renderer);
+	}
+}
+
+int showmenu_pause(SDL_Window* Window, SDL_Renderer* Renderer, int Score)
+{
+	SDL_Rect fillRect = {140 , 530 , 20 , 20};
+	SDL_SetRenderDrawColor(Renderer, 255 , 0 , 0 , 0xFF);
+	SDL_RenderFillRect(Renderer, &fillRect);
+	bool stillmenu = true;
+	while (stillmenu == true)
+	{
+		cout << 38 << endl;
+		int x, y;
+
+		//SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 00, 00, 00));
+		cout << 31 << endl;
+
+		SDL_Event event;
+
+		while (true)
+		{
+			cout << 32 << endl;
+			//SDL_BlitSurface(title, NULL, screen, &positiontitle);
+
+			while (SDL_PollEvent(&event))
+			{
+				cout << 33 << endl;
+				switch (event.type)
+				{
+
+				case(SDL_QUIT):
+				{
+					return 0;
+					break;
+				}
+				case(SDL_MOUSEBUTTONDOWN):
+				{
+
+					if (event.button.button = SDL_BUTTON_LEFT)
+					{
+						cout << 34 << endl;
+						x = event.button.x;
+						y = event.button.y;
+							if ((x >= 140 && x <= 160 && y >= 530 && x <= 550))
+							{
+								//	SDL_Delay(500);
+								//SDL_FreeSurface(title);
+								//for (int j = 0; j < menunumber; j++)
+									//SDL_FreeSurface(menu[j]);
+									return 1;
+									break;
+							}
+						}
+						break;
+					}
+
+				case(SDL_KEYDOWN):
+				{
+					if(event.key.keysym.sym == SDLK_UP)
+					{
+						SDL_Rect fillRect = {140 , 530 , 20 , 20};
+						SDL_SetRenderDrawColor(Renderer, 255 , 255 , 255 , 0xFF);
+						SDL_RenderFillRect(Renderer, &fillRect);
+						return 1;
+					}
+					break;
+				}
+			}
+		}
+			cout << 33 << endl;
+			SDL_RenderPresent(Renderer);
+		}
+	}
+
+
+}
+
+void show_highscore(SDL_Window* Window, SDL_Renderer * Renderer)
+{
+	TTF_Font* scorefont = TTF_OpenFont("Font.ttf",50);
+	SDL_Surface* screen = SDL_GetWindowSurface(Window);
+	stringstream highscoreString;
+	SDL_Surface * shown_highscore;
+	SDL_Color color = { 130,0,130 };
+
+	cout<<highscore;
+	highscoreString << "highscore : " << highscore;
+	shown_highscore = TTF_RenderText_Solid(scorefont, highscoreString.str().c_str(), color);
+
+	SDL_Rect position;
+	position.x = 50;
+	position.y = 100;
+
+	SDL_BlitSurface(shown_highscore, NULL, screen, &position);
+	SDL_RenderPresent(Renderer);
+}
+
+
 int main()
 {
 	srand(time(0));
@@ -297,9 +548,13 @@ int main()
 	int Easyness = 5;
 	int First_Balls_Active = 4;
 	int Score = 1;
+	int highscore = 0;
+	int h;
 	int X = 0;
+	int x,y;
 	bool Quit = false;
 	bool Show = true;
+	bool start = true;
 
 	Initialize_Balls_Active(Balls_Active);
 	Initialize_Blocks_Active(Blocks_Active);
@@ -336,9 +591,16 @@ int main()
 
 	SDL_Event e;
 
-	Window = SDL_CreateWindow("Project S", SDL_WINDOWPOS_UNDEFINED , SDL_WINDOWPOS_UNDEFINED , Screen_Width , Screen_Height , SDL_WINDOW_SHOWN);
+	Window = SDL_CreateWindow("Snake Vs Block", SDL_WINDOWPOS_UNDEFINED , SDL_WINDOWPOS_UNDEFINED , Screen_Width , Screen_Height , SDL_WINDOW_SHOWN);
 	Renderer = SDL_CreateRenderer(Window, -1 , SDL_RENDERER_ACCELERATED);
-
+	h = showmenu_start(Window, Renderer);
+	if(h == 0)
+		return 0;
+	if(h == 1)
+		SDL_Delay(10);
+	SDL_Rect fillRect = {140 , 530 , 20 , 20};
+	SDL_SetRenderDrawColor(Renderer, 255 , 255 , 255 , 0xFF);
+	SDL_RenderFillRect(Renderer, &fillRect);
 	while(!Quit)
 	{
 		while(SDL_PollEvent(&e) != 0)
@@ -347,7 +609,33 @@ int main()
 			{
 				Quit = true;
 			}
+			/*if(e.type = SDL_MOUSEBUTTONDOWN)
+			{
+				if (e.button.button = SDL_BUTTON_LEFT)
+				{
+					x = e.button.x;
+					y = e.button.y;
+						if (x >= 140 && x <= 160 && y >= 530 && x <= 550)
+						{
+								h = showmenu_pause(Window,Renderer,Score);
+								if(h == 0)
+									return 0;
+								if(h == 1)
+									SDL_Delay(20);
+						}
+
+					}
+				}*/
 		}
+
+		ifstream readFile;
+		readFile.open("highscore.txt");
+		if (readFile.is_open())
+		{
+			while (!readFile.eof())
+				readFile >> highscore;
+		}
+		readFile.close();
 		if(Show == true)
 		{
 			for(int i = 0 ; i < First_Balls_Active ; i++)
@@ -375,6 +663,7 @@ int main()
 			Ball_Number_Text(First_Balls_Active , 80 , 520 , 20 , 40);
 			Score_Text(Screen_Width - 100 , 520 , 70 , 40);
 			Score_Number_Text(Score , Screen_Width - 25 , 520 , 20 , 40);
+			show_highscore(Window, Renderer);
 		}
 		Show = false;
 		if(e.type == SDL_KEYDOWN)
@@ -393,6 +682,15 @@ int main()
 				Draw_Circle((X_Position_Ball[0] - Vx) , Y_Position_Ball[0] , R , Null_Color , Null_Color , Null_Color);
 				Draw_Circle(X_Position_Ball[0] , Y_Position_Ball[0] , R , Full_Color , Full_Color , Full_Color);
 				SDL_Delay(5);
+				break;
+
+				case SDLK_UP:
+				h = showmenu_pause(Window,Renderer,Score);
+				if(h == 0)
+					return 0;
+				else
+					SDL_Delay(30);
+				cout << 34 << endl;
 				break;
 			}
 		}
@@ -424,7 +722,11 @@ int main()
 						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
-							return 0;
+							show_highscore(Window,Renderer);
+							h = showmenu_gameover(Window,Renderer,Score);
+							if(h == 0)
+								return 0;
+
 						}
 						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
 						{
@@ -456,7 +758,11 @@ int main()
 						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
-							return 0;
+							show_highscore(Window,Renderer);
+							h = showmenu_gameover(Window,Renderer,Score);
+							if(h == 0)
+								return 0;
+
 						}
 						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
 						{
@@ -488,7 +794,11 @@ int main()
 						Score = Score + X;
 						if(First_Balls_Active <= 0)
 						{
-							return 0;
+							show_highscore(Window,Renderer);
+							h = showmenu_gameover(Window,Renderer,Score);
+							if(h == 0)
+								return 0;
+
 						}
 						for(int i = First_Balls_Active + X - 1 ; i >= First_Balls_Active ; i--)
 						{
@@ -836,6 +1146,7 @@ int main()
 				}
 			}
 		}
+
 		SDL_Delay(50);
 	}
 }
